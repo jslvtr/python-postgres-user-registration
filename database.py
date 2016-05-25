@@ -14,6 +14,9 @@ class CursorFromConnectionPool:
         return self.cursor
 
     def __exit__(self, exception_type, exception_value, exception_traceback):
-        self.cursor.close()
-        self.conn.commit()
+        if exception_value:  # This is equivalent to `if exception_value is not None`
+            self.conn.rollback()
+        else:
+            self.cursor.close()
+            self.conn.commit()
         connection_pool.putconn(self.conn)
