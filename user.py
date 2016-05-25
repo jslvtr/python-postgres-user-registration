@@ -1,4 +1,4 @@
-from database import connection_pool
+from database import ConnectionPool
 
 class User:
     def __init__(self, email, first_name, last_name, id=None):
@@ -11,14 +11,15 @@ class User:
         return "<User {}>".format(self.email)
 
     def save_to_db(self):
-        with connection_pool.getconn() as conn:
+        # This is creating a new connection pool every time! Very expensive...
+        with ConnectionPool() as conn:
             with conn.cursor() as cursor:
                 cursor.execute('INSERT INTO users (email, first_name, last_name) VALUES (%s, %s, %s)',
                                 (self.email, self.first_name, self.last_name))
 
     @classmethod
     def load_from_db_by_email(cls, email):
-        with connection_pool.getconn() as conn:
+        with ConnectionPool() as conn:
             with conn.cursor() as cursor:
                 # Note the (email,) to make it a tuple!
                 cursor.execute('SELECT * FROM users WHERE email=%s', (email,))
