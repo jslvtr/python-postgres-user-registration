@@ -1,4 +1,7 @@
 from user import User
+from database import Database
+
+Database.initialise()
 
 user = User('jose@schoolofcode.me', 'Jose', 'Salvatierra')
 

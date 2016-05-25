@@ -3,23 +3,23 @@ from psycopg2 import pool
 
 class Database:
 
-    connection_pool = None
+    __connection_pool = None
 
     @staticmethod
     def initialise():
-        connection_pool = pool.SimpleConnectionPool(1, 10, database="learning", user="postgres", password="1234", host="localhost")
+        Database.__connection_pool = pool.SimpleConnectionPool(1, 10, database="learning", user="postgres", password="1234", host="localhost")
 
     @staticmethod
     def get_connection():
-        return Database.connection_pool.getconn()
+        return Database.__connection_pool.getconn()
 
     @staticmethod
     def return_connection(connection):
-        Database.connection_pool.putconn(connection)
+        Database.__connection_pool.putconn(connection)
 
     @staticmethod
     def close_all_connections():
-        Database.connection_pool.closeall()
+        Database.__connection_pool.closeall()
 
 class CursorFromConnectionPool:
     def __init__(self):
