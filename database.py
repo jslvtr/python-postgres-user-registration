@@ -1,7 +1,25 @@
 from psycopg2 import pool
 
-connection_pool = pool.SimpleConnectionPool(1, 10, database="learning", user="postgres", password="1234", host="localhost")
-# connection_pool = pool.SimpleConnectionPool(1, 1, database="learning", user="postgres", password="1234", host="localhost")
+
+class Database:
+
+    connection_pool = None
+
+    @staticmethod
+    def initialise():
+        connection_pool = pool.SimpleConnectionPool(1, 10, database="learning", user="postgres", password="1234", host="localhost")
+
+    @staticmethod
+    def get_connection():
+        return Database.connection_pool.getconn()
+
+    @staticmethod
+    def return_connection(connection):
+        Database.connection_pool.putconn(connection)
+
+    @staticmethod
+    def close_all_connections():
+        Database.connection_pool.closeall()
 
 class CursorFromConnectionPool:
     def __init__(self):
@@ -9,7 +27,7 @@ class CursorFromConnectionPool:
         self.cursor = None
 
     def __enter__(self):
-        self.conn = connection_pool.getconn()
+        self.conn = Database.get_connection()
         self.cursor = self.conn.cursor()
         return self.cursor
 
@@ -19,4 +37,4 @@ class CursorFromConnectionPool:
         else:
             self.cursor.close()
             self.conn.commit()
-        connection_pool.putconn(self.conn)
+        Database.return_connection(self.conn)
