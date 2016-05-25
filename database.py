@@ -6,8 +6,8 @@ class Database:
     __connection_pool = None
 
     @staticmethod
-    def initialise():
-        Database.__connection_pool = pool.SimpleConnectionPool(1, 10, database="learning", user="postgres", password="1234", host="localhost")
+    def initialise(**kwargs):
+        Database.__connection_pool = pool.SimpleConnectionPool(1, 10, **kwargs)
 
     @staticmethod
     def get_connection():
